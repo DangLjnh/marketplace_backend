@@ -3,12 +3,13 @@ import initWebRoutes from "./routes/api";
 require("dotenv").config();
 import bodyParser from "body-parser";
 import configCors from "./config/cors";
-
+import cors from "cors";
 const app = express();
 const PORT = process.env.PORT || 9999;
 
 // config cors
-configCors(app);
+// configCors(app);
+app.use(cors());
 
 //config body-parser
 app.use(bodyParser.json());
