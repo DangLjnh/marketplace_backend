@@ -1,8 +1,8 @@
 import express from "express";
 import initWebRoutes from "./routes/api";
+import { configPassport } from "./controller/passportController";
 require("dotenv").config();
 import bodyParser from "body-parser";
-import configCors from "./config/cors";
 import cors from "cors";
 const app = express();
 const PORT = process.env.PORT || 9999;
@@ -15,6 +15,9 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 //test connection
+
+// config passport
+configPassport();
 
 //init web routes
 initWebRoutes(app);
