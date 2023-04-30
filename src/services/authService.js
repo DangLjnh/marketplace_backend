@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import db from "../models";
+import { readGroupWithRoleService } from "../services/groupService";
 import {
   createAccessToken,
   createRefreshToken,
@@ -114,16 +115,19 @@ const loginUserService = async (rawUserData) => {
         rawUserData.password,
         userItem.password
       );
-      // const role = await getGroupWithRole(userItem);
-      const payload = {
+      const roleOfUser = await readGroupWithRoleService(userItem);
+      const payloadAccessToken = {
         id: userItem.id,
+        groupID: userItem.groupID,
+        role: roleOfUser,
         // username: userItem.username,
         // email: userItem.email,
-        // groupID: userItem.groupID,
-        // role,
       };
-      const accessToken = createAccessToken(payload);
-      const refreshToken = createRefreshToken(payload);
+      const payloadRefreshToken = {
+        id: userItem.id,
+      };
+      const accessToken = createAccessToken(payloadAccessToken);
+      const refreshToken = createRefreshToken(payloadRefreshToken);
       if (checkCorrectPassword) {
         return {
           EM: "Login successfully!",

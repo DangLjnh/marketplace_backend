@@ -6,6 +6,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       User.belongsTo(models.Group, { foreignKey: "groupID" });
       User.hasOne(models.User_Detail);
+      User.hasMany(models.Address);
     }
   }
   User.init(

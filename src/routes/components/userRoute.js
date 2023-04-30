@@ -7,9 +7,9 @@ import authController from "../../controller/authController";
 
 // router.get("/", userController.createUser);
 
-router.post("/login", authController.loginUser);
-router.post("/register", authController.registerUser);
-router.post("/verify-token", authController.verifyToken);
-router.get("/account", checkUserJwt, userController.getUserAccount);
+router.post("/auth/login", authController.loginUser);
+router.post("/auth/register", authController.registerUser);
+router.post("/auth/verify-token", authController.verifyToken);
+router.get("/auth/account", checkUserJwt, userController.getUserAccount);
 
 module.exports = router;

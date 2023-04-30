@@ -1,12 +1,12 @@
 const express = require("express");
 const router = express.Router();
 
-import roleController from "../../controller/roleController";
+import addressController from "../../controller/addressController";
 
 // router.get("/", userController.createUser);
 
-// router.get("/read", groupController.readGroup);
-router.get("/create", roleController.createRole);
+router.get("/user/address/read-all", addressController.readAllAddress);
+router.post("/user/address/create", addressController.createAddress);
 // router.get("/update", groupController.updateGroup);
 // router.get("/delete", groupController.deleteGroup);
 

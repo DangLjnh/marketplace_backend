@@ -67,9 +67,32 @@ const checkUserJwt = (req, res, next) => {
   }
 };
 
+const checkUserPermission = (req, res, next) => {
+  if (req?.user) {
+    let currentUrl = req?.path;
+    const canAccess = req.user.role.some((item) => item.url === currentUrl);
+    if (canAccess) {
+      next();
+    } else {
+      return res.status(403).json({
+        EM: "You don't have permission to access this resource!",
+        EC: -1,
+        DT: "",
+      });
+    }
+  } else {
+    return res.status(401).json({
+      EM: "Not authenticated the user",
+      EC: -1,
+      DT: "",
+    });
+  }
+};
+
 module.exports = {
   createAccessToken,
   createRefreshToken,
   verifyToken,
   checkUserJwt,
+  checkUserPermission,
 };

@@ -1,26 +1,8 @@
-import roleService from "../services/roleService";
+import addressService from "../services/addressService";
 
-const createRole = async (req, res) => {
+const createAddress = async (req, res) => {
   try {
-    let data = await roleService.createRoleService(req.body);
-    return res.status(200).json({
-      EM: data.EM, //error message
-      EC: data.EC, //error code
-      DT: data.DT,
-    });
-  } catch (error) {
-    console.log("🚀 ~ file: roleController.js:12 ~ createRole ~ error:", error);
-    return res.status(500).json({
-      EM: data.EM, //error message
-      EC: data.EC, //error code
-      DT: data.DT,
-    });
-  }
-};
-
-const readAllRole = async (req, res) => {
-  try {
-    let data = await roleService.readAllRoleService();
+    let data = await addressService.createAddressService(req.body);
     return res.status(200).json({
       EM: data.EM, //error message
       EC: data.EC, //error code
@@ -28,7 +10,7 @@ const readAllRole = async (req, res) => {
     });
   } catch (error) {
     console.log(
-      "🚀 ~ file: authController.js:55 ~ verifyToken ~ error:",
+      "🚀 ~ file: addressController.js:12 ~ createAddress ~ error:",
       error
     );
     return res.status(500).json({
@@ -39,16 +21,19 @@ const readAllRole = async (req, res) => {
   }
 };
 
-const deleteRole = async (req, res) => {
+const readAllAddress = async (req, res) => {
   try {
-    let data = await roleService.deleteRoleService(req.body);
+    let data = await addressService.readAllAddressService();
     return res.status(200).json({
       EM: data.EM, //error message
       EC: data.EC, //error code
       DT: data.DT,
     });
   } catch (error) {
-    console.log("🚀 ~ file: roleController.js:12 ~ createRole ~ error:", error);
+    console.log(
+      "🚀 ~ file: addressController.js:33 ~ readAllAddress ~ error:",
+      error
+    );
     return res.status(500).json({
       EM: data.EM, //error message
       EC: data.EC, //error code
@@ -57,4 +42,25 @@ const deleteRole = async (req, res) => {
   }
 };
 
-module.exports = { createRole, readAllRole, deleteRole };
+const deleteAddress = async (req, res) => {
+  try {
+    let data = await addressService.createAddressService(req.body);
+    return res.status(200).json({
+      EM: data.EM, //error message
+      EC: data.EC, //error code
+      DT: data.DT,
+    });
+  } catch (error) {
+    console.log(
+      "🚀 ~ file: addressController.js:12 ~ createAddress ~ error:",
+      error
+    );
+    return res.status(500).json({
+      EM: data.EM, //error message
+      EC: data.EC, //error code
+      DT: data.DT,
+    });
+  }
+};
+
+module.exports = { createAddress, readAllAddress, deleteAddress };
