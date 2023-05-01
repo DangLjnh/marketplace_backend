@@ -42,9 +42,9 @@ const readAllAddress = async (req, res) => {
   }
 };
 
-const deleteAddress = async (req, res) => {
+const updateAddress = async (req, res) => {
   try {
-    let data = await addressService.createAddressService(req.body);
+    let data = await addressService.updateAddressService(req.body);
     return res.status(200).json({
       EM: data.EM, //error message
       EC: data.EC, //error code
@@ -63,4 +63,30 @@ const deleteAddress = async (req, res) => {
   }
 };
 
-module.exports = { createAddress, readAllAddress, deleteAddress };
+const deleteAddress = async (req, res) => {
+  try {
+    let data = await addressService.deleteAddressService(req.body);
+    return res.status(200).json({
+      EM: data.EM, //error message
+      EC: data.EC, //error code
+      DT: data.DT,
+    });
+  } catch (error) {
+    console.log(
+      "🚀 ~ file: addressController.js:75 ~ deleteAddress ~ error:",
+      error
+    );
+    return res.status(500).json({
+      EM: data.EM, //error message
+      EC: data.EC, //error code
+      DT: data.DT,
+    });
+  }
+};
+
+module.exports = {
+  createAddress,
+  readAllAddress,
+  deleteAddress,
+  updateAddress,
+};

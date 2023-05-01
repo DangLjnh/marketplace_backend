@@ -1,8 +1,7 @@
 import db from "../models";
 import { errorCode } from "../status/status";
-import { Op } from "sequelize";
 
-const checkRoleInGroup = async (id) => {
+const checkRoleAssignToGroup = async (id) => {
   let result = [];
   const getAllGroupExistRole = await db.Group_Role.findAll({
     where: { roleID: id },
@@ -107,13 +106,13 @@ const readAllRoleService = async () => {
 };
 
 const deleteRoleService = async (rawRoleData) => {
-  const dataRoleInGroup = await checkRoleInGroup(rawRoleData.id);
-  if (dataRoleInGroup) {
+  const dataRoleInGroup = await checkRoleAssignToGroup(rawRoleData.id);
+  if (dataRoleInGroup.length > 0) {
     const nameListGroup = dataRoleInGroup.map((item) => item.name).join(", ");
     return {
-      EM: `Role is assigned to group ${nameListGroup}`,
+      EM: `Cannot delete, role is assigned to group ${nameListGroup}`,
       EC: errorCode.ERROR_PARAMS,
-      DT: dataRoleInGroup,
+      DT: "",
     };
   }
   try {

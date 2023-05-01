@@ -16,7 +16,7 @@ const salt = bcrypt.genSaltSync(10);
 import { Op } from "sequelize";
 
 const checkUsernameExist = async (username) => {
-  const isExistUser = await db.User_Detail.findOne({
+  const isExistUser = await db.User.findOne({
     where: { username },
   });
   if (isExistUser) {
@@ -27,7 +27,7 @@ const checkUsernameExist = async (username) => {
 };
 
 const checkPhoneExist = async (phone) => {
-  const isExistUser = await db.User_Detail.findOne({
+  const isExistUser = await db.User.findOne({
     where: { phone },
   });
   if (isExistUser) {
@@ -79,8 +79,7 @@ const registerUserService = async (rawUserData) => {
     }).then(async (dataUser) => {
       await db.User_Detail.create({
         full_name: rawUserData.full_name,
-        username: rawUserData.username,
-        phone: rawUserData.phone,
+        email: rawUserData.username,
         sex: rawUserData.sex,
         photo_url: rawUserData.photo_url,
         userID: dataUser.id,

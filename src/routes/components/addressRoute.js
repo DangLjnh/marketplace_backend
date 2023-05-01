@@ -7,7 +7,7 @@ import addressController from "../../controller/addressController";
 
 router.get("/user/address/read-all", addressController.readAllAddress);
 router.post("/user/address/create", addressController.createAddress);
-// router.get("/update", groupController.updateGroup);
-// router.get("/delete", groupController.deleteGroup);
+router.put("/user/address/update", addressController.updateAddress);
+router.delete("/user/address/delete", addressController.deleteAddress);
 
 module.exports = router;

@@ -42,4 +42,46 @@ const readAllGroup = async (req, res) => {
   }
 };
 
-module.exports = { createGroup, readAllGroup };
+const deleteGroup = async (req, res) => {
+  try {
+    let data = await groupService.deleteGroupService(req.body);
+    return res.status(200).json({
+      EM: data.EM, //error message
+      EC: data.EC, //error code
+      DT: data.DT,
+    });
+  } catch (error) {
+    console.log(
+      "🚀 ~ file: groupController.js:54 ~ deleteGroup ~ error:",
+      error
+    );
+    return res.status(500).json({
+      EM: data.EM, //error message
+      EC: data.EC, //error code
+      DT: data.DT,
+    });
+  }
+};
+
+const updateGroup = async (req, res) => {
+  try {
+    let data = await groupService.updateGroupService(req.body);
+    return res.status(200).json({
+      EM: data.EM, //error message
+      EC: data.EC, //error code
+      DT: data.DT,
+    });
+  } catch (error) {
+    console.log(
+      "🚀 ~ file: groupController.js:75 ~ updateGroup ~ error:",
+      error
+    );
+    return res.status(500).json({
+      EM: data.EM, //error message
+      EC: data.EC, //error code
+      DT: data.DT,
+    });
+  }
+};
+
+module.exports = { createGroup, readAllGroup, deleteGroup, updateGroup };

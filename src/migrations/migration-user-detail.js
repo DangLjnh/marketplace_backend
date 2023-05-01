@@ -11,10 +11,7 @@ module.exports = {
       full_name: {
         type: Sequelize.STRING,
       },
-      username: {
-        type: Sequelize.STRING,
-      },
-      phone: {
+      email: {
         type: Sequelize.STRING,
       },
       sex: {

@@ -48,7 +48,7 @@ const deleteRole = async (req, res) => {
       DT: data.DT,
     });
   } catch (error) {
-    console.log("🚀 ~ file: roleController.js:12 ~ createRole ~ error:", error);
+    console.log("🚀 ~ file: roleController.js:51 ~ deleteRole ~ error:", error);
     return res.status(500).json({
       EM: data.EM, //error message
       EC: data.EC, //error code
