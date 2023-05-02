@@ -15,20 +15,15 @@ import {
 const salt = bcrypt.genSaltSync(10);
 import { Op } from "sequelize";
 
-const checkUsernameExist = async (username) => {
+const checkUserExist = async (rawUserData) => {
   const isExistUser = await db.User.findOne({
-    where: { username },
-  });
-  if (isExistUser) {
-    return true;
-  } else {
-    return false;
-  }
-};
-
-const checkPhoneExist = async (phone) => {
-  const isExistUser = await db.User.findOne({
-    where: { phone },
+    where: {
+      [Op.or]: [
+        { id: rawUserData },
+        { username: rawUserData },
+        { phone: rawUserData },
+      ],
+    },
   });
   if (isExistUser) {
     return true;
@@ -47,21 +42,21 @@ const checkPassword = (password, hashPassword) => {
 };
 
 const registerUserService = async (rawUserData) => {
-  const isPhoneExist = await checkPhoneExist(rawUserData.phone);
-  const isUsernameExist = await checkUsernameExist(rawUserData.username);
+  const isPhoneExist = await checkUserExist(rawUserData.phone);
+  const isUsernameExist = await checkUserExist(rawUserData.username);
 
   if (isUsernameExist) {
     return {
       EM: "Email already exist",
-      EC: 1,
-      DT: { isUsernameExist },
+      EC: errorCode.ERROR_PARAMS,
+      DT: "",
     };
   }
   if (isPhoneExist) {
     return {
       EM: "Phone number already exist",
-      EC: 1,
-      DT: { isPhoneExist },
+      EC: errorCode.ERROR_PARAMS,
+      DT: "",
     };
   }
 
@@ -191,4 +186,9 @@ const verifyTokenService = async (rawData) => {
   }
 };
 
-module.exports = { registerUserService, loginUserService, verifyTokenService };
+module.exports = {
+  registerUserService,
+  loginUserService,
+  verifyTokenService,
+  checkUserExist,
+};

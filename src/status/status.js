@@ -1,7 +1,7 @@
 const statusUser = {
   ACTIVE: 1,
   PENDING: 2,
-  BLOCK: 3,
+  BAN: 3,
 };
 
 const groupAccess = {

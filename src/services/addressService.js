@@ -78,7 +78,7 @@ const readAllAddressService = async () => {
 };
 
 const deleteAddressService = async (rawAddressData) => {
-  const ADDRESS_DEFAULT = true;
+  const IS_ADDRESS_DEFAULT = true;
   const isExistAddress = await checkAddressExist(rawAddressData.id);
   if (!isExistAddress) {
     return {
@@ -94,7 +94,7 @@ const deleteAddressService = async (rawAddressData) => {
     const addressDetailItem = await db.Address_Detail.findOne({
       where: { addressID: rawAddressData.id },
     });
-    if (addressItem.isDefault === ADDRESS_DEFAULT) {
+    if (addressItem.isDefault === IS_ADDRESS_DEFAULT) {
       return {
         EM: "Cannot delete address default!",
         EC: errorCode.ERROR_PARAMS,
