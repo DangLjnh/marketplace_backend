@@ -20,6 +20,9 @@ module.exports = {
       city: {
         type: Sequelize.STRING,
       },
+      city_code: {
+        type: Sequelize.INTEGER,
+      },
       district: {
         type: Sequelize.STRING,
       },

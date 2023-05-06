@@ -186,9 +186,12 @@ const verifyTokenService = async (rawData) => {
   }
 };
 
+const sendCodeService = async (rawData) => {};
+
 module.exports = {
   registerUserService,
   loginUserService,
   verifyTokenService,
   checkUserExist,
+  sendCodeService,
 };

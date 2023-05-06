@@ -65,7 +65,10 @@ const readSingleUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
-    let data = await userService.updateUserService(req.body);
+    let data = await userService.updateUserService(
+      req?.files?.file,
+      req.body.data
+    );
     return res.status(200).json({
       EM: data.EM, //error message
       EC: data.EC, //error code

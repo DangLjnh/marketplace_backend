@@ -1,6 +1,27 @@
 import db from "../models";
 import { statusUser, errorCode } from "../status/status";
 import authService from "./authService";
+var cloudinary = require("cloudinary").v2;
+const streamifier = require("streamifier");
+
+//upload file to cloudinary
+const uploadFromBuffer = (request) => {
+  return new Promise((resolve, reject) => {
+    let cld_upload_stream = cloudinary.uploader.upload_stream(
+      {
+        folder: "foo",
+      },
+      (error, result) => {
+        if (result) {
+          resolve(result);
+        } else {
+          reject(error);
+        }
+      }
+    );
+    streamifier.createReadStream(request.data).pipe(cld_upload_stream);
+  });
+};
 
 const readAllUserService = async () => {
   try {
@@ -70,7 +91,18 @@ const readUserAccountService = async (id) => {
   }
 };
 
-const updateUserService = async (rawUserData) => {
+const updateUserService = async (file, data) => {
+  let photo = file && file !== undefined && (await uploadFromBuffer(file));
+  const rawUserData = JSON.parse(data);
+
+  // check exist
+  if (!rawUserData.id) {
+    return {
+      EM: "ID is required!",
+      EC: errorCode.ERROR_PARAMS,
+      DT: "",
+    };
+  }
   const isExistUser = await authService.checkUserExist(rawUserData.id);
   if (!isExistUser) {
     return {
@@ -79,24 +111,46 @@ const updateUserService = async (rawUserData) => {
       DT: "",
     };
   }
+
   try {
+    const rawData = {
+      full_name: rawUserData.fullName,
+      email: rawUserData.email,
+      sex: rawUserData.sex,
+    };
+    if (file) {
+      rawData.photo_url = photo.url;
+    }
+    let userItem = await db.User_Detail.findOne({
+      where: { userID: rawUserData.id },
+      attributes: ["photo_url"], // find in table mapping
+      raw: true,
+      nest: true,
+      through: { attributes: [] }, //remove data default of sequelize
+    });
+
+    // delete old image
+    if (userItem?.photo_url && file) {
+      // get publicID and delete image
+      const publicID = userItem.photo_url.match(/\/v\d+\/(.+)\.\w{3,4}$/)[1];
+      cloudinary.uploader.destroy(publicID, function (error, result) {
+        console.log(result, error);
+      });
+    }
+
+    // update user
     await db.User.update(
       {
         phone: rawUserData.phone,
+        username: rawUserData.email,
         id_status: rawUserData.id_status,
         groupID: rawUserData.groupID,
       },
       { where: { id: rawUserData.id } }
     ).then(async () => {
-      await db.User_Detail.update(
-        {
-          full_name: rawUserData.full_name,
-          email: rawUserData.username,
-          sex: rawUserData.sex,
-          photo_url: rawUserData.photo_url,
-        },
-        { where: { userID: rawUserData.id } }
-      );
+      await db.User_Detail.update(rawData, {
+        where: { userID: rawUserData.id },
+      });
     });
     return {
       EM: "Update user successfully",
@@ -151,4 +205,5 @@ module.exports = {
   readAllUserService,
   updateUserService,
   banUserService,
+  uploadFromBuffer,
 };

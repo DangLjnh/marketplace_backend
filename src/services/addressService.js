@@ -1,6 +1,6 @@
 import db from "../models";
 import { errorCode } from "../status/status";
-
+import { checkUserExist } from "./authService";
 const checkAddressExist = async (id) => {
   const isExistAddress = await db.Address.findOne({
     where: { id },
@@ -13,6 +13,14 @@ const checkAddressExist = async (id) => {
 };
 
 const createAddressService = async (rawAddressData) => {
+  const isExistUser = await checkUserExist(rawAddressData.userID);
+  if (!isExistUser) {
+    return {
+      EM: "User doesn't exist!",
+      EC: errorCode.ERROR_PARAMS,
+      DT: "",
+    };
+  }
   try {
     await db.Address.create({
       isDefault: rawAddressData.isDefault,
@@ -23,6 +31,7 @@ const createAddressService = async (rawAddressData) => {
         phone: rawAddressData.phone,
         address: rawAddressData.address,
         city: rawAddressData.city,
+        city_code: rawAddressData.city_code,
         district: rawAddressData.district,
         ward: rawAddressData.ward,
         addressID: addressItem.id,
@@ -42,11 +51,21 @@ const createAddressService = async (rawAddressData) => {
   }
 };
 
-const readAllAddressService = async () => {
+const readAllAddressOfUserService = async (userID) => {
+  const isExistUser = await checkUserExist(userID);
+  if (!isExistUser) {
+    return {
+      EM: "User doesn't exist!",
+      EC: errorCode.ERROR_PARAMS,
+      DT: "",
+    };
+  }
   // create new Address
   try {
     const data = await db.Address.findAll({
+      where: { userID },
       order: [["id"]], //ASC
+      attributes: ["id", "isDefault", "userID"],
       include: {
         model: db.Address_Detail,
         attributes: [
@@ -54,6 +73,7 @@ const readAllAddressService = async () => {
           "phone",
           "address",
           "city",
+          "city_code",
           "district",
           "ward",
         ],
@@ -77,9 +97,52 @@ const readAllAddressService = async () => {
   }
 };
 
-const deleteAddressService = async (rawAddressData) => {
+const readSingleAddressService = async (addressID) => {
+  const isExistAddress = await checkAddressExist(addressID);
+  if (!isExistAddress) {
+    return {
+      EM: "Address doesn't exist!",
+      EC: errorCode.ERROR_PARAMS,
+      DT: "",
+    };
+  }
+  try {
+    const data = await db.Address.findOne({
+      where: { id: addressID },
+      attributes: ["id", "isDefault", "userID"],
+      include: {
+        model: db.Address_Detail,
+        attributes: [
+          "full_name",
+          "phone",
+          "address",
+          "city",
+          "city_code",
+          "district",
+          "ward",
+        ],
+      },
+      raw: true,
+      nest: true,
+      through: { attributes: [] }, //remove data default of sequelize
+    });
+    return {
+      EM: "Read single address successfully!",
+      EC: errorCode.SUCCESS,
+      DT: data,
+    };
+  } catch (error) {
+    return {
+      EM: "Error from server address service!",
+      EC: errorCode.ERROR_SERVER,
+      DT: "",
+    };
+  }
+};
+
+const deleteAddressService = async (addressID) => {
   const IS_ADDRESS_DEFAULT = true;
-  const isExistAddress = await checkAddressExist(rawAddressData.id);
+  const isExistAddress = await checkAddressExist(addressID);
   if (!isExistAddress) {
     return {
       EM: "Address doesn't exist!",
@@ -89,10 +152,10 @@ const deleteAddressService = async (rawAddressData) => {
   }
   try {
     const addressItem = await db.Address.findOne({
-      where: { id: rawAddressData.id },
+      where: { id: addressID },
     });
     const addressDetailItem = await db.Address_Detail.findOne({
-      where: { addressID: rawAddressData.id },
+      where: { addressID: addressID },
     });
     if (addressItem.isDefault === IS_ADDRESS_DEFAULT) {
       return {
@@ -139,6 +202,18 @@ const updateAddressService = async (rawAddressData) => {
     };
   }
   try {
+    if (rawAddressData.isDefault === true) {
+      await db.Address.findOne({
+        where: { isDefault: true },
+      }).then((data) => {
+        db.Address.update(
+          {
+            isDefault: false,
+          },
+          { where: { id: data.id } }
+        );
+      });
+    }
     await db.Address.update(
       {
         isDefault: rawAddressData.isDefault,
@@ -151,6 +226,7 @@ const updateAddressService = async (rawAddressData) => {
           phone: rawAddressData.phone,
           address: rawAddressData.address,
           city: rawAddressData.city,
+          city_code: rawAddressData.city_code,
           district: rawAddressData.district,
           ward: rawAddressData.ward,
         },
@@ -171,9 +247,52 @@ const updateAddressService = async (rawAddressData) => {
   }
 };
 
+const defaultAddressService = async (addressID) => {
+  const isExistAddress = await checkAddressExist(addressID);
+  if (!isExistAddress) {
+    return {
+      EM: "Address doesn't exist!",
+      EC: errorCode.ERROR_PARAMS,
+      DT: "",
+    };
+  }
+  try {
+    await db.Address.findOne({
+      where: { isDefault: true },
+    }).then((data) => {
+      db.Address.update(
+        {
+          isDefault: false,
+        },
+        { where: { id: data.id } }
+      );
+    });
+
+    await db.Address.update(
+      {
+        isDefault: true,
+      },
+      { where: { id: addressID } }
+    );
+    return {
+      EM: "Update address successfully!",
+      EC: errorCode.SUCCESS,
+      DT: "",
+    };
+  } catch (error) {
+    return {
+      EM: "Error from server address service!",
+      EC: errorCode.ERROR_SERVER,
+      DT: "",
+    };
+  }
+};
+
 module.exports = {
   createAddressService,
-  readAllAddressService,
+  readAllAddressOfUserService,
   deleteAddressService,
   updateAddressService,
+  readSingleAddressService,
+  defaultAddressService,
 };
