@@ -12,6 +12,7 @@ const customizeConfig = {
   host: process.env.DB_HOST,
   dialect: process.env.DB_DIALECT,
   logging: false,
+  port: 3306,
   dialectOptions:
     process.env.DB_SSL === "true"
       ? {
