@@ -86,6 +86,10 @@ const registerUserService = async (rawUserData) => {
       DT: "",
     };
   } catch (error) {
+    console.log(
+      "🚀 ~ file: authService.js:89 ~ registerUserService ~ error:",
+      error
+    );
     return {
       EM: "Error from server auth service!",
       EC: errorCode.ERROR_SERVER,

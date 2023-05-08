@@ -24,6 +24,10 @@ const registerUser = async (req, res) => {
       DT: data.DT,
     });
   } catch (error) {
+    console.log(
+      "🚀 ~ file: authController.js:27 ~ registerUser ~ error:",
+      error
+    );
     return res.status(500).json({
       EM: data.EM, //error message
       EC: data.EC, //error code
