@@ -3,8 +3,8 @@
 - cấu hình deploy database
   DB_HOST=aws.connect.psdb.cloud
   DB_DATABASE_NAME=s-market
-  DB_USERNAME=qguatb0iqgpqqqm8xtb5
-  DB_PASSWORD=pscale_pw_C5FFL9xrDGY0tOonGZhq2NokQmJ4ywQr0TkZYMVTYK1
+  DB_USERNAME=y3q1djedyvnccyl1929l
+  DB_PASSWORD=pscale_pw_WnfZRR1UvJ7Lg6Xkf7GFQ58e77w6bHZYiEPfbNwhQGj
   DB_DIALECT=mysql
   //run at localhost, set ssl to false; run on heroku, set ssl to true
   DB_SSL=true
