@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 import userController from "../../controller/userController";
-import { checkUserJwt } from "../../middleware/JwtAction";
+import { checkUserJwt, checkUserPermission } from "../../middleware/JwtAction";
 import authController from "../../controller/authController";
 
 // router.get("/", userController.createUser);

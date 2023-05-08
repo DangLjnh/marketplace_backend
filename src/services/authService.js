@@ -104,6 +104,13 @@ const loginUserService = async (rawUserData) => {
         ],
       },
     });
+    if (userItem.id_status == statusUser.BAN) {
+      return {
+        EM: "Your account has been banned!",
+        EC: errorCode.ERROR_PARAMS,
+        DT: "",
+      };
+    }
     if (userItem) {
       const checkCorrectPassword = checkPassword(
         rawUserData.password,

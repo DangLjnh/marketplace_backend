@@ -1,6 +1,7 @@
 import db from "../models";
 import { errorCode } from "../status/status";
 import { checkUserExist } from "./authService";
+
 const checkAddressExist = async (id) => {
   const isExistAddress = await db.Address.findOne({
     where: { id },
@@ -10,6 +11,19 @@ const checkAddressExist = async (id) => {
   } else {
     return false;
   }
+};
+
+const clearDefaultAddress = async () => {
+  await db.Address.findOne({
+    where: { isDefault: true },
+  }).then((data) => {
+    db.Address.update(
+      {
+        isDefault: false,
+      },
+      { where: { id: data.id } }
+    );
+  });
 };
 
 const createAddressService = async (rawAddressData) => {
@@ -22,6 +36,9 @@ const createAddressService = async (rawAddressData) => {
     };
   }
   try {
+    if (rawAddressData.isDefault === true) {
+      clearDefaultAddress();
+    }
     await db.Address.create({
       isDefault: rawAddressData.isDefault,
       userID: rawAddressData.userID,
@@ -203,16 +220,7 @@ const updateAddressService = async (rawAddressData) => {
   }
   try {
     if (rawAddressData.isDefault === true) {
-      await db.Address.findOne({
-        where: { isDefault: true },
-      }).then((data) => {
-        db.Address.update(
-          {
-            isDefault: false,
-          },
-          { where: { id: data.id } }
-        );
-      });
+      clearDefaultAddress(rawAddressData);
     }
     await db.Address.update(
       {
