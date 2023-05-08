@@ -1,13 +1,19 @@
-step 1: clone project và sử dụng nodejs 14.7.x hoặc version 14 nào cũng được
-
-step 2: cài đặt thư viện : npm i
-
-step 3: setup .env (database, port...) --- này t setup rồi
-
-step 4: run helloworld: npm start
-
-step 5: tạo database tên là s-market
-
 - tạo tất cả table trong db: npx sequelize-cli db:migrate
 
-step 6: enjoy !
+- cấu hình deploy database
+  DB_HOST=aws.connect.psdb.cloud
+  DB_DATABASE_NAME=s-market
+  DB_USERNAME=qtx1b9v8vi73rdoiqlh7
+  DB_PASSWORD=pscale_pw_kSv61PmR0q5EaTu83lYhmqJxniz1oAxO1rs4oCK4JxM
+  DB_DIALECT=mysql
+  //run at localhost, set ssl to false; run on heroku, set ssl to true
+  DB_SSL=true
+
+- cấu hình sử dụng ở local
+  DB_HOST=localhost
+  DB_DATABASE_NAME=s-market
+  DB_USERNAME=root
+  DB_PASSWORD=
+  DB_DIALECT=mysql
+  //run at localhost, set ssl to false; run on heroku, set ssl to true
+  DB_SSL=false
