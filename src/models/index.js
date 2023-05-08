@@ -4,13 +4,15 @@ const fs = require("fs");
 const path = require("path");
 const Sequelize = require("sequelize");
 const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || "development";
+import mysql2 from "mysql2";
+new Sequelize(options);
 // const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 let sequelize;
 const customizeConfig = {
   host: process.env.DB_HOST,
   dialect: process.env.DB_DIALECT,
+  dialectModule: mysql2,
   logging: false,
   port: 3306,
   dialectOptions:
