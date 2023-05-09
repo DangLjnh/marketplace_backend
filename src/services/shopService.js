@@ -2,10 +2,12 @@ import db from "../models";
 import { errorCode, statusShop } from "../status/status";
 import { Op } from "sequelize";
 
+const checkNotExist = () => {};
+
 const checkShopExist = async (rawShopData) => {
   const isShopExist = await db.Shop.findOne({
     where: {
-      [Op.or]: [{ id: rawShopData }],
+      [Op.or]: [{ id: rawShopData }, { slug: rawShopData }],
     },
   });
   const isShopExists = await db.Shop_Detail.findOne({
@@ -41,11 +43,19 @@ const createShopService = async (rawShopData) => {
   const isNameExist = await checkShopExist(rawShopData.name);
   const isPhoneExist = await checkShopExist(rawShopData.phone);
   const isEmailExist = await checkShopExist(rawShopData.email);
+  const isSlugExist = await checkShopExist(rawShopData.slug);
   const isUserExistShop = await checkUserExistShop(rawShopData.userID);
 
   if (isEmailExist) {
     return {
       EM: "Email already exist",
+      EC: errorCode.ERROR_PARAMS,
+      DT: "",
+    };
+  }
+  if (isSlugExist) {
+    return {
+      EM: "Slug already exist",
       EC: errorCode.ERROR_PARAMS,
       DT: "",
     };
@@ -75,6 +85,7 @@ const createShopService = async (rawShopData) => {
   // create new shop
   try {
     await db.Shop.create({
+      slug: rawShopData.slug,
       id_status: statusShop.ACTIVE,
       userID: rawShopData.userID,
     }).then(async (dataShop) => {
@@ -162,15 +173,15 @@ const readAllShopService = async () => {
   }
 };
 
-const readSingleShopeService = async (shopID) => {
-  if (!shopID) {
+const readSingleShopeService = async (slug) => {
+  if (!slug) {
     return {
       EM: "ID is required!",
       EC: errorCode.ERROR_PARAMS,
       DT: "",
     };
   }
-  const isShopExist = await checkShopExist(shopID);
+  const isShopExist = await checkShopExist(slug);
   if (!isShopExist) {
     return {
       EM: "Shop doesn't exist!",
@@ -180,7 +191,7 @@ const readSingleShopeService = async (shopID) => {
   }
   try {
     const data = await db.Shop.findOne({
-      where: { id: shopID },
+      where: { slug },
       attributes: [
         "id",
         "feedback_rating",
@@ -232,12 +243,7 @@ const updateShopService = async (rawShopData) => {
       DT: "",
     };
   }
-
   const isShopExist = await checkShopExist(rawShopData.id);
-  const isNameExist = await checkShopExist(rawShopData.name);
-  const isPhoneExist = await checkShopExist(rawShopData.phone);
-  const isEmailExist = await checkShopExist(rawShopData.email);
-
   if (!isShopExist) {
     return {
       EM: "Shop doesn't exist!",
@@ -245,29 +251,58 @@ const updateShopService = async (rawShopData) => {
       DT: "",
     };
   }
-  if (isEmailExist) {
-    return {
-      EM: "Email already exist",
-      EC: errorCode.ERROR_PARAMS,
-      DT: "",
-    };
+
+  if (rawShopData.slug) {
+    const isSlugExist = await checkShopExist(rawShopData.slug);
+    if (isSlugExist) {
+      return {
+        EM: "Slug already exist",
+        EC: errorCode.ERROR_PARAMS,
+        DT: "",
+      };
+    }
   }
-  if (isNameExist) {
-    return {
-      EM: "Name already exist",
-      EC: errorCode.ERROR_PARAMS,
-      DT: "",
-    };
+
+  if (rawShopData.name) {
+    const isNameExist = await checkShopExist(rawShopData.name);
+    if (isNameExist) {
+      return {
+        EM: "Name already exist",
+        EC: errorCode.ERROR_PARAMS,
+        DT: "",
+      };
+    }
   }
-  if (isPhoneExist) {
-    return {
-      EM: "Phone number already exist",
-      EC: errorCode.ERROR_PARAMS,
-      DT: "",
-    };
+
+  if (rawShopData.phone) {
+    const isPhoneExist = await checkShopExist(rawShopData.phone);
+    if (isPhoneExist) {
+      return {
+        EM: "Phone already exist",
+        EC: errorCode.ERROR_PARAMS,
+        DT: "",
+      };
+    }
+  }
+
+  if (rawShopData.email) {
+    const isEmailExist = await checkShopExist(rawShopData.email);
+    if (isEmailExist) {
+      return {
+        EM: "Email already exist",
+        EC: errorCode.ERROR_PARAMS,
+        DT: "",
+      };
+    }
   }
 
   try {
+    await db.Shop.update(
+      {
+        slug: rawShopData.slug,
+      },
+      { where: { id: rawShopData.id } }
+    );
     await db.Shop_Detail.update(
       {
         name: rawShopData.name,

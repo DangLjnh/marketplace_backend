@@ -36,11 +36,14 @@ const createAddressService = async (rawAddressData) => {
     };
   }
   try {
+    const data = await db.Address.findOne({
+      where: { userID: rawAddressData.userID },
+    });
     if (rawAddressData.isDefault === true) {
       clearDefaultAddress();
     }
     await db.Address.create({
-      isDefault: rawAddressData.isDefault,
+      isDefault: data ? rawAddressData.isDefault : true,
       userID: rawAddressData.userID,
     }).then(async (addressItem) => {
       await db.Address_Detail.create({

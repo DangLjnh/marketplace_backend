@@ -41,7 +41,7 @@ const readAllShop = async (req, res) => {
 
 const readSingleShope = async (req, res) => {
   try {
-    let data = await shopService.readSingleShopeService(req.params.id);
+    let data = await shopService.readSingleShopeService(req.params.slug);
     return res.status(200).json({
       EM: data.EM, //error message
       EC: data.EC, //error code

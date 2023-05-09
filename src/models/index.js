@@ -4,7 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const Sequelize = require("sequelize");
 const basename = path.basename(__filename);
-import mysql2 from "mysql2";
+const mysql2 = require("mysql2");
 
 const db = {};
 let sequelize;

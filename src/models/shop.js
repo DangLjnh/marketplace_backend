@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Shop.init(
     {
+      slug: DataTypes.STRING,
       feedback_rating: DataTypes.STRING,
       score_rating: DataTypes.STRING,
       id_status: DataTypes.INTEGER,

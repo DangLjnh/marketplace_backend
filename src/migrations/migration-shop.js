@@ -8,6 +8,9 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
+      slug: {
+        type: Sequelize.STRING,
+      },
       feedback_rating: {
         type: Sequelize.STRING,
       },

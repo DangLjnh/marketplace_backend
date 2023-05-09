@@ -99,6 +99,14 @@ const registerUserService = async (rawUserData) => {
 };
 
 const loginUserService = async (rawUserData) => {
+  const isUserExist = await checkUserExist(rawUserData.username);
+  if (!isUserExist) {
+    return {
+      EM: "Your email or phone or password is incorrect!",
+      EC: errorCode.ERROR_PARAMS,
+      DT: "",
+    };
+  }
   try {
     const userItem = await db.User.findOne({
       where: {
