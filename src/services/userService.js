@@ -1,6 +1,6 @@
 import db from "../models";
 import { statusUser, errorCode } from "../status/status";
-import authService from "./authService";
+import { checkUserExist } from "./authService";
 var cloudinary = require("cloudinary").v2;
 const streamifier = require("streamifier");
 
@@ -58,6 +58,14 @@ const readAllUserService = async () => {
 };
 
 const readUserAccountService = async (id) => {
+  const isUserExist = await checkUserExist(id);
+  if (!isUserExist) {
+    return {
+      EM: "User doesn't exist!",
+      EC: errorCode.ERROR_PARAMS,
+      DT: "",
+    };
+  }
   try {
     const user = await db.User.findOne({
       where: { id },
@@ -92,9 +100,6 @@ const readUserAccountService = async (id) => {
 };
 
 const updateUserService = async (file, data) => {
-  let photo = file && file !== undefined && (await uploadFromBuffer(file));
-  const rawUserData = JSON.parse(data);
-
   // check exist
   if (!rawUserData.id) {
     return {
@@ -104,6 +109,8 @@ const updateUserService = async (file, data) => {
     };
   }
   const isExistUser = await authService.checkUserExist(rawUserData.id);
+  const isPhoneExist = await checkUserExist(rawUserData.phone);
+  const isUsernameExist = await checkUserExist(rawUserData.username);
   if (!isExistUser) {
     return {
       EM: "User doesn't exist!",
@@ -111,8 +118,24 @@ const updateUserService = async (file, data) => {
       DT: "",
     };
   }
+  if (isUsernameExist) {
+    return {
+      EM: "Email already exist",
+      EC: errorCode.ERROR_PARAMS,
+      DT: "",
+    };
+  }
+  if (isPhoneExist) {
+    return {
+      EM: "Phone number already exist",
+      EC: errorCode.ERROR_PARAMS,
+      DT: "",
+    };
+  }
 
   try {
+    let photo = file && file !== undefined && (await uploadFromBuffer(file));
+    const rawUserData = JSON.parse(data);
     const rawData = {
       full_name: rawUserData.fullName,
       email: rawUserData.email,
@@ -167,7 +190,14 @@ const updateUserService = async (file, data) => {
 };
 
 const banUserService = async (id) => {
-  const isExistUser = await authService.checkUserExist(id);
+  if (!id) {
+    return {
+      EM: "ID is required!",
+      EC: errorCode.ERROR_PARAMS,
+      DT: "",
+    };
+  }
+  const isExistUser = await checkUserExist(id);
   if (!isExistUser) {
     return {
       EM: "User doesn't exist!",

@@ -4,9 +4,10 @@ module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
       // define association here
-      User.belongsTo(models.Group, { foreignKey: "groupID" });
       User.hasOne(models.User_Detail);
+      User.hasOne(models.Shop);
       User.hasMany(models.Address);
+      User.belongsTo(models.Group, { foreignKey: "groupID" });
     }
   }
   User.init(

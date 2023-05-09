@@ -4,6 +4,12 @@ const statusUser = {
   BAN: 3,
 };
 
+const statusShop = {
+  ACTIVE: 1,
+  PENDING: 2,
+  BAN: 3,
+};
+
 const groupAccess = {
   CUSTOMER: 1,
 };
@@ -20,4 +26,10 @@ const errorCode = {
   ERROR_PARAMS: 1,
 };
 
-module.exports = { statusUser, groupAccess, errorCode, loginMethod };
+module.exports = {
+  statusUser,
+  groupAccess,
+  errorCode,
+  loginMethod,
+  statusShop,
+};

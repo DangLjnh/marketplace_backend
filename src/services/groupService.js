@@ -16,6 +16,14 @@ const checkGroupExist = async (rawUserData) => {
 };
 
 const checkGroupAssignToRole = async (id) => {
+  const isExistGroup = await checkGroupExist(rawGroupData.name);
+  if (!isExistGroup) {
+    return {
+      EM: "Group doesn't exist!",
+      EC: errorCode.ERROR_PARAMS,
+      DT: "",
+    };
+  }
   let result = [];
   const getAllRoleExistGroup = await db.Group_Role.findAll({
     where: { groupID: +id },
@@ -129,6 +137,21 @@ const readAllGroupService = async () => {
 };
 
 const deleteGroupService = async (rawGroupData) => {
+  if (!rawGroupData.id) {
+    return {
+      EM: "ID is required!",
+      EC: errorCode.ERROR_PARAMS,
+      DT: "",
+    };
+  }
+  const isExistGroup = await checkGroupExist(rawGroupData.id);
+  if (!isExistGroup) {
+    return {
+      EM: "Group doesn't exist!",
+      EC: errorCode.ERROR_PARAMS,
+      DT: "",
+    };
+  }
   const dataGroupInRole = await checkGroupAssignToRole(rawGroupData.id);
   const dataUser = await checkGroupAssignToUser(rawGroupData.id);
   if (dataGroupInRole.length > 0) {
@@ -139,7 +162,6 @@ const deleteGroupService = async (rawGroupData) => {
       DT: "",
     };
   }
-
   if (dataUser.length > 0) {
     const nameList = dataUser.map((item) => item.id).join(", ");
     return {
@@ -184,40 +206,46 @@ const updateGroupService = async (rawGroupData) => {
       DT: "",
     };
   }
+  const isExistNameGroup = await checkGroupExist(rawGroupData.name);
+  if (isExistNameGroup) {
+    return {
+      EM: "Name of group already exist!",
+      EC: errorCode.ERROR_PARAMS,
+      DT: "",
+    };
+  }
   try {
-    if (rawGroupData) {
-      if (rawGroupData.dataGroup && rawGroupData.dataGroup.length > 0) {
-        await db.Group.update(
-          {
-            name: rawGroupData.name,
-            desc: rawGroupData.desc,
-          },
-          { where: { id: rawGroupData.id } }
-        ).then(async () => {
-          await db.Group_Role.destroy({
-            where: { groupID: rawGroupData.id },
-          }).then(async () => {
-            await db.Group_Role.bulkCreate(rawGroupData.dataGroup);
-          });
+    if (rawGroupData.dataGroup && rawGroupData.dataGroup.length > 0) {
+      await db.Group.update(
+        {
+          name: rawGroupData.name,
+          desc: rawGroupData.desc,
+        },
+        { where: { id: rawGroupData.id } }
+      ).then(async () => {
+        await db.Group_Role.destroy({
+          where: { groupID: rawGroupData.id },
+        }).then(async () => {
+          await db.Group_Role.bulkCreate(rawGroupData.dataGroup);
         });
-        return {
-          EM: "Update group successful!",
-          EC: 0,
-          DT: "",
-        };
-      } else {
-        return {
-          EM: "Must be assign 1 role to group!",
-          EC: 1,
-          DT: "",
-        };
-      }
+      });
+      return {
+        EM: "Update group successful!",
+        EC: 0,
+        DT: "",
+      };
+    } else {
+      return {
+        EM: "Must be assign 1 role to group!",
+        EC: errorCode.ERROR_PARAMS,
+        DT: "",
+      };
     }
   } catch (error) {
     console.log(error);
     return {
       EM: "Something wrong with services",
-      EC: 1,
+      EC: errorCode.ERROR_PARAMS,
       DT: [],
     };
   }
